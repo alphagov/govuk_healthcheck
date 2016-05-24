@@ -10,17 +10,30 @@ Add this line to your application's Gemfile:
 gem 'govuk_healthcheck'
 ```
 
-And then execute:
+For Rails apps:
 
-    $ bundle
+```ruby
+module CustomCheck
+  def self.check
+    {
+      my_custom_check: {
+        status: everything_okay? ? 'ok' : 'critical'
+      }
+    }
+  end
+end
 
-Or install it yourself as:
+get '/healthcheck', to: GovukHealthcheck.rack_response(
+  GovukHealthcheck::SidekiqRedis,
+  GovukHealthcheck::RailsDatabase,
+  CustomCheck
+)
+```
 
-    $ gem install govuk_healthcheck
+This will check:
 
-## Usage
-
-TODO: Write usage instructions here
+- Redis connectivity (via Sidekiq)
+- Database connectivity (via ActiveRecord)
 
 ## Contributing
 
